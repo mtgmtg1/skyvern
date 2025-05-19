@@ -47,56 +47,44 @@ services:
       # =========================
       #       LLM Settings
       # =========================
-      # OpenAI Support:
-      # If you want to use OpenAI as your LLM provider, uncomment the following lines and fill in your OpenAI API key.
-      # - ENABLE_OPENAI=true
-      # - LLM_KEY=OPENAI_GPT4O
-      # - OPENAI_API_KEY=<your_openai_key>
-      #  Gemini Support:
-      # Gemini is a new LLM provider that is currently in beta. You can use it by uncommenting the following lines and filling in your Gemini API key.
-      - LLM_KEY=GEMINI
-      - ENABLE_GEMINI=true
-      - GEMINI_API_KEY=YOUR_GEMINI_KEY
-      - LLM_KEY=GEMINI_2.5_PRO_PREVIEW_03_25
-      # If you want to use other LLM provider, like azure and anthropic:
-      # - ENABLE_ANTHROPIC=true
-      # - LLM_KEY=ANTHROPIC_CLAUDE3.5_SONNET
+      
+      # 다른 LLM 제공자 비활성화
+      - ENABLE_OPENAI=false
+      - ENABLE_GEMINI=false
+      # - GEMINI_API_KEY=YOUR_GEMINI_KEY # ENABLE_GEMINI=false 이므로 주석처리 해도 무방
+      # - LLM_KEY=GEMINI_2.5_PRO_PREVIEW_03_25 # LLM_KEY는 아래에서 OpenAI Compatible 용으로 덮어씀
+
+      # - ENABLE_ANTHROPIC=false # 필요시 추가
       # - ANTHROPIC_API_KEY=<your_anthropic_key>
-      # Microsoft Azure OpenAI support:
-      # If you'd like to use Microsoft Azure OpenAI as your managed LLM service integration with Skyvern, use the environment variables below.
-      # In your Microsoft Azure subscription, you will need to provision the OpenAI service and deploy a model, in order to utilize it.
-      # 1. Login to the Azure Portal
-      # 2. Create an Azure Resource Group
-      # 3. Create an OpenAI resource in the Resource Group (choose a region and pricing tier)
-      # 4. From the OpenAI resource's Overview page, open the "Azure AI Foundry" portal (click the "Explore Azure AI Foundry Portal" button)
-      # 5. In Azure AI Foundry, click "Shared Resources" --> "Deployments"
-      # 6. Click "Deploy Model" --> "Deploy Base Model" --> select a model (specify this model "Deployment Name" value for the AZURE_DEPLOYMENT variable below)
-      # - ENABLE_AZURE=true
-      # - LLM_KEY=AZURE_OPENAI                          # Leave this value static, don't change it
-      # - AZURE_DEPLOYMENT=<your_azure_deployment>      # Use the OpenAI model "Deployment Name" that you deployed, using the steps above
-      # - AZURE_API_KEY=<your_azure_api_key>            # Copy and paste Key1 or Key2 from the OpenAI resource in Azure Portal
-      # - AZURE_API_BASE=<your_azure_api_base>          # Copy and paste the "Endpoint" from the OpenAI resource in Azure Portal (eg. https://xyzxyzxyz.openai.azure.com/)
-      # - AZURE_API_VERSION=<your_azure_api_version>    # Specify a valid Azure OpenAI data-plane API version (eg. 2024-08-01-preview) Docs: https://learn.microsoft.com/en-us/azure/ai-services/openai/reference
-      # Amazon Bedrock Support:
-      # Amazon Bedrock is a managed service that enables you to invoke LLMs and bill them through your AWS account.
-      # To use Amazon Bedrock as the LLM provider for Skyvern, specify the following environment variables.
-      # 1. In the AWS IAM console, create a new AWS IAM User (name it whatever you want)
-      # 2. Assign the "AmazonBedrockFullAccess" policy to the user
-      # 3. Generate an IAM Access Key under the IAM User's Security Credentials tab
-      # 4. In the Amazon Bedrock console, go to "Model Access"
-      # 5. Click Modify Model Access button
-      # 6. Enable "Claude 3.5 Sonnet v2" and save changes
-      # - ENABLE_BEDROCK=true
-      # - LLM_KEY=BEDROCK_ANTHROPIC_CLAUDE3.5_SONNET   # This is the Claude 3.5 Sonnet "V2" model. Change to BEDROCK_ANTHROPIC_CLAUDE3.5_SONNET_V1 for the non-v2 version.
-      # - AWS_REGION=us-west-2                         # Replace this with a different AWS region, if you desire
-      # - AWS_ACCESS_KEY_ID=FILL_ME_IN_PLEASE
-      # - AWS_SECRET_ACCESS_KEY=FILL_ME_IN_PLEASE
-      # Ollama Support:
-      # Ollama is a local LLM provider that can be used to run models locally on your machine.
-      # - LLM_KEY=OLLAMA
-      # - ENABLE_OLLAMA=true
-      # - OLLAMA_MODEL=qwen2.5:7b-instruct
-      # - OLLAMA_SERVER_URL=http://host.docker.internal:11434
+
+      # - ENABLE_AZURE=false # 필요시 추가
+      # (Azure 관련 변수들 생략)
+
+      # - ENABLE_BEDROCK=false # 필요시 추가
+      # (Bedrock 관련 변수들 생략)
+
+      - ENABLE_OLLAMA=false # Ollama 직접 사용은 비활성화
+      # - OLLAMA_MODEL=mistral-small-3.1-24b-instruct-2503
+      # - OLLAMA_SERVER_URL=http://host.docker.internal:1236/v1
+
+      # OpenAI Compatible (LM Studio) 설정
+      - ENABLE_OPENAI_COMPATIBLE=true
+      - OPENAI_COMPATIBLE_MODEL_KEY=LMSTUDIO_MISTRAL # Skyvern 내부 설정 키
+      - OPENAI_COMPATIBLE_API_BASE=http://host.docker.internal:1236/v1
+      - OPENAI_COMPATIBLE_API_KEY="sk-dummykey" # LM Studio는 키 불필요, 형식상 제공
+      - OPENAI_COMPATIBLE_MODEL_NAME=mistral-small-3.1-24b-instruct-2503 # 실제 모델 ID
+      
+      # (선택 사항) OpenAI Compatible 추가 설정들
+      # - OPENAI_COMPATIBLE_API_VERSION=
+      # - OPENAI_COMPATIBLE_MAX_TOKENS=
+      # - OPENAI_COMPATIBLE_TEMPERATURE=
+      - OPENAI_COMPATIBLE_SUPPORTS_VISION=false # 대부분의 LM Studio 모델은 비전 미지원
+      # - OPENAI_COMPATIBLE_ADD_ASSISTANT_PREFIX=false # 필요에 따라 true/false
+      # - OPENAI_COMPATIBLE_REASONING_EFFORT= 
+
+      # Skyvern이 사용할 최종 LLM_KEY
+      - LLM_KEY=LMSTUDIO_MISTRAL # OPENAI_COMPATIBLE_MODEL_KEY와 동일하게 설정
+
       # Open Router Support:
       # - ENABLE_OPENROUTER=true
       # - LLM_KEY=OPENROUTER
@@ -119,6 +107,19 @@ services:
       # - BITWARDEN_CLIENT_SECRET=FILL_ME_IN_PLEASE
       # - BITWARDEN_MASTER_PASSWORD=FILL_ME_IN_PLEASE
       
+      # LM Studio를 위한 OpenAI Compatible 설정
+      # - ENABLE_OPENAI=true
+      # - LLM_KEY는 LiteLLM이 모델을 식별하고 OpenAI 클라이언트를 사용하도록 하는 키입니다.
+      # - OPENAI_MODEL_NAME에 실제 모델 ID를 지정하므로, LLM_KEY는 해당 API_BASE에서 사용될 대표 모델명 정도로 이해할 수 있습니다.
+      # - Skyvern 내부적으로 특정 LLM_KEY 문자열 (예: "OPENAI_GPT_DEFAULT")에 OPENAI_API_BASE를 연결할 수도 있습니다.
+      # - 가장 안전한 방법은 실제 OpenAI 모델 이름 중 하나를 사용하는 것이지만, 호환 엔드포인트에서는 중요하지 않을 수 있습니다.
+      # - 여기서는 "custom-openai-model" 같은 일반적인 이름으로 설정하거나, OPENAI_MODEL_NAME으로 대체될 것을 기대하고 간단히 설정합니다.
+      # - LLM_KEY=mistral-small-3.1-24b-instruct-2503 # 또는 "custom-model" 등, OPENAI_MODEL_NAME에 의해 덮어쓰여질 수 있음
+      # - OPENAI_API_KEY="sk-dummykey" # LM Studio는 API 키가 필요 없지만, 형식상 임의의 값을 제공
+      # - OPENAI_API_BASE=http://host.docker.internal:1236/v1 # LM Studio의 OpenAI 호환 기본 URL (포트: 1234 가정)
+      # - OPENAI_MODEL_NAME은 LiteLLM을 통해 실제 API 호출 시 model 파라미터로 전달될 모델 ID
+      # - OPENAI_MODEL_NAME=mistral-small-3.1-24b-instruct-2503 # LM Studio에 로드된 모델 ID (가정)
+
     depends_on:
       postgres:
         condition: service_healthy
